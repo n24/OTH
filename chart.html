@@ -34,7 +34,8 @@ var height = 500 - margin.top - margin.bottom;
 var status = 1;
 var myrect;
 var svg;
-	function display () {
+
+function display () {
 	myrect = svg.append("rect")
 			.attr("class","ro")
 			.attr("height", 30)
@@ -152,19 +153,51 @@ ny = maxy - miny;
 		.attr("x", 3/ndays*width)
 		.attr("y", height-yyy/maxy*height);
 		
-	
-	/*transaction.append("text")
-		.attr("y",(height-yyy/maxy*height)+8)
-		.attr("x", 3/ndays*width)
-		.text("W");*/
-		
 	transaction.append("text")
       .datum(function(d) { return {name: d.name, value: d.values[d.values.length - 1]}; })
       .attr("transform", function(d) { return "translate(" + x(d.value.date) + "," + y(d.value.money) + ")"; })
       .attr("x", 3)
       .attr("dy", ".35em")
       .text(function(d) { return d.name; });
-	
+
+// resize
+d3.select(window).on('resize', resize); 
+ 
+function resize() {
+	alert ("Inside Resize");
+    // update width
+    width = parseInt(d3.select("body").style('width'), 10);
+    width = width - margin.left - margin.right;
+	height = parseInt(d3.select('body').style('width'), 10);
+    height = height - margin.top - margin.bottom;
+ 
+    // resize the chart
+    x.range([0, 100]);
+    d3.select(body.node().parentNode)
+        .style('height', (y.rangeExtent()[1] + margin.top + margin.bottom) + 'px')
+        .style('width', (width + margin.left + margin.right) + 'px');
+ 
+    //chart.selectAll('rect.background')
+      //  .attr('width', width);
+ 
+    //chart.selectAll('rect.percent')
+      //  .attr('width', function(d) { return x(d.percent); });
+ 
+    // update median ticks
+    //var median = d3.median(chart.selectAll('.bar').data(), 
+      //  function(d) { return d.percent; });
+    
+    //chart.selectAll('line.median')
+      //  .attr('x1', x(median))
+        //.attr('x2', x(median));
+ 
+ 
+    // update axes
+    //chart.select('.x.axis.top').call(xAxis.orient('top'));
+    //chart.select('.x.axis.bottom').call(xAxis.orient('bottom'));
+ 
+}
+ 
 });
 
 </script>
