@@ -29,8 +29,26 @@ body {
 <script>
 
 var margin = {top: 120, right: 80, bottom: 30, left: 100};
-var width = 960 - margin.left - margin.right;
+var width = 950 - margin.left - margin.right;
 var height = 500 - margin.top - margin.bottom;
+var status = 1;
+var myrect;
+var svg;
+	function display () {
+	myrect = svg.append("rect")
+			.attr("class","ro")
+			.attr("height", 30)
+			.attr("width",50)
+			.attr("fill", "blue")
+			.attr("x", 340)
+			.attr("id","rect1")
+			.attr("y", 205);
+	if (status == 0) {
+		d3.selectAll(".ro").remove();
+		status = 1;
+	} else status = 0;
+	}
+
 
 var parseDate = d3.time.format("%Y%m%d")
 				.parse;
@@ -57,7 +75,7 @@ var line = 	d3.svg.line()
 			.y(function(d) { return y(d.money); });
 	
 
-var svg = 	d3.select("body").append("svg")
+svg = 	d3.select("body").append("svg")
 			.attr("width", width + margin.left + margin.right)
 			.attr("height", height + margin.top + margin.bottom)
 			.append("g")
@@ -125,17 +143,20 @@ ny = maxy - miny;
       .attr("d", function(d) { return line(d.values); })
       .style("stroke", function(d) { return color(d.name); });
 	 
-	transaction.append("rect")
+	svg.append("rect")
 		.attr("height", 20)
 		.attr("width",20)
 		.attr("fill", "red")
+		.attr("id","r1")
+		.attr("onclick","display()")
 		.attr("x", 3/ndays*width)
 		.attr("y", height-yyy/maxy*height);
+		
 	
-	transaction.append("text")
-		.attr("y",height-yyy/maxy*height)
+	/*transaction.append("text")
+		.attr("y",(height-yyy/maxy*height)+8)
 		.attr("x", 3/ndays*width)
-		.text("W");
+		.text("W");*/
 		
 	transaction.append("text")
       .datum(function(d) { return {name: d.name, value: d.values[d.values.length - 1]}; })
