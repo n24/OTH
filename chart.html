@@ -29,45 +29,61 @@ body {
 <script>
 
 var margin = {top: 120, right: 80, bottom: 30, left: 100};
-var width = 1200 - margin.left - margin.right;
-var height = 700 - margin.top - margin.bottom;
+var width = 960 - margin.left - margin.right;
+var height = 500 - margin.top - margin.bottom;
 
-var parseDate = d3.time.format("%Y%m%d").parse;
+var parseDate = d3.time.format("%Y%m%d")
+				.parse;
 
-var x = d3.time.scale().range([0, width]);
+var x = d3.time.scale()
+		.range([0, width]);
 
-var y = d3.scale.linear().range([height,0]);
+var y = d3.scale.linear()
+		.range([height,0]);
 
 var color = d3.scale.category10();
 
-var xAxis = d3.svg.axis().scale(x).orient("bottom");
-var yAxis = d3.svg.axis().scale(y).orient("left");
+var xAxis = d3.svg.axis()
+			.scale(x)
+			.orient("bottom");
 
-var line = d3.svg.line()
-    .interpolate("basis")
-    .x(function(d) { return x(d.date); })
-    .y(function(d) { return y(d.money); });
+var yAxis = d3.svg.axis()
+			.scale(y)
+			.orient("left");
+
+var line = 	d3.svg.line()
+			.interpolate("basis")
+			.x(function(d) { return x(d.date); })
+			.y(function(d) { return y(d.money); });
 	
 
-var svg = d3.select("body").append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+var svg = 	d3.select("body").append("svg")
+			.attr("width", width + margin.left + margin.right)
+			.attr("height", height + margin.top + margin.bottom)
+			.append("g")
+			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 d3.tsv("data.txt", function(error, data) {
   color.domain(d3.keys(data[0]).filter(function(key) { return key !== "date"; }));
 
+  var gvndate = "20150103";
+var yyy;
+
   var fdate, ldate,flag = 0;
   data.forEach(function(d) {
+  
+	if (d.date == gvndate) {
+		yyy = d.money;
+	}
     d.date =  parseDate(d.date);
 	ldate = d.date;
 	if (!flag) {
-		fdate = ldate;
+	fdate = ldate;
 		flag = 1;
 	}
   });
-var ndays = (ldate - fdate) / 1000 / 3600 / 24;
+  
+var ndays = ((ldate - fdate) / 1000 / 3600 / 24)+1;
   var transactions = color.domain().map(function(name) {
     return {
       name: name,
@@ -78,12 +94,12 @@ var ndays = (ldate - fdate) / 1000 / 3600 / 24;
   });
 
   x.domain(d3.extent(data, function(d) { return d.date; }));
-
+var maxy,miny,ny;
   y.domain([
-    d3.min(transactions, function(c) { return d3.min(c.values, function(v) { return v.money; }); }),
-    d3.max(transactions, function(c) { return d3.max(c.values, function(v) { return v.money; }); })
+    miny = d3.min(transactions, function(c) { return d3.min(c.values, function(v) { return v.money; }); }),
+    maxy = d3.max(transactions, function(c) { return d3.max(c.values, function(v) { return v.money; }); })
   ]);
-
+ny = maxy - miny;
   svg.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
@@ -108,17 +124,17 @@ var ndays = (ldate - fdate) / 1000 / 3600 / 24;
       .attr("class", "line")
       .attr("d", function(d) { return line(d.values); })
       .style("stroke", function(d) { return color(d.name); });
-	  
+	 
 	transaction.append("rect")
 		.attr("height", 20)
 		.attr("width",20)
 		.attr("fill", "red")
-		.attr("x", 2/ndays*width)
-		.attr("y", 10);
+		.attr("x", 3/ndays*width)
+		.attr("y", height-yyy/maxy*height);
 	
 	transaction.append("text")
-		.attr("y",25)
-		.attr("x", 2/ndays*width)
+		.attr("y",height-yyy/maxy*height)
+		.attr("x", 3/ndays*width)
 		.text("W");
 		
 	transaction.append("text")
